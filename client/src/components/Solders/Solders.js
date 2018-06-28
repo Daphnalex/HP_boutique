@@ -1,18 +1,23 @@
 import React, {Component} from 'react';
-import {Table, Button, Glyphicon} from 'react-bootstrap';
+import {Table, Button, Glyphicon, Modal} from 'react-bootstrap';
 import './Solders.css';
 import AddFormulaire from '../AddFormulaire/AddFormulaire.js';
+import UpdateFormulaire from '../UpdateFormulaire/UpdateFormulaire.js';
+import {observable} from 'mobx';
 
 class Solders extends Component {
+  
   constructor(props){
     super(props);
     this.state = {
       solders:[],
       activeAdd: false,
-      activeUpdate: false
+      activeUpdate: false,
+      activeSolder: {},
+      activeDelete: false
     }
     this.activeForm = this.activeForm.bind(this);
-    //this.updateSolder = this.updateSolder.bind(this);
+    this.activeUpdate = this.activeUpdate.bind(this);
   }
 
 
@@ -24,18 +29,43 @@ class Solders extends Component {
 
   activeForm(e){
     this.setState({
-      active: true
+      activeAdd: true
     });
     e.preventDefault();
   }
 
-  updateSolder(solder){
-    this.setState({activeSolder: solder})
+  activeUpdate(solder){
+    this.setState({
+      activeSolder: solder,
+      activeUpdate: true
+    })
     console.log('solder to update', solder);
-    // fetch('http://localhost:3001/api/solders/'+solder._id, {
-    //
-    // })
+  }
 
+  deleteSolder(solder){
+    console.log("solder",solder)
+    this.setState({
+      activeSolder: solder
+    }, function(){
+        console.log("vendeur en cours", this.state.activeSolder);
+        this.setState({activeDelete: true})
+    });
+  }
+
+  deleteConfirmation(solder){
+    console.log('ici',solder)
+    fetch('http://localhost:3001/api/solders/'+solder._id, {
+      method: 'DELETE'
+    }).then((solder) => {
+                          console.log('solder', solder);
+                          return solder; })
+      .then((solder) =>  { console.log(solder); })
+      .catch((error) => { console.log('That was en error'+ error); })
+    this.setState({activeDelete: false});
+  }
+
+  cancelDelete(){
+    this.setState({activeDelete: false});
   }
 
   render(){
@@ -46,6 +76,26 @@ class Solders extends Component {
         :
         <div></div>
       }
+      {this.state.activeUpdate==true ?
+        <UpdateFormulaire data={this.state.activeSolder}/>
+        :
+        <div></div>
+      }
+      {this.state.activeDelete == true ?
+        <div className="static-modal">
+          <Modal.Dialog>
+            <Modal.Body>
+                <div>Etes-vous sûr de vouloir supprimer ce vendeur ?</div>
+            </Modal.Body>
+
+            <Modal.Footer>
+              <Button  onClick={()=>this.cancelDelete}>Annuler</Button>
+              <Button onClick={()=>this.deleteConfirmation(this.state.activeSolder)} bsStyle="primary">Supprimer</Button>
+            </Modal.Footer>
+          </Modal.Dialog>
+        </div>
+        :
+        <div></div>}
       <Button onClick={this.activeForm} className='add' bsStyle="primary">Ajouter un vendeur</Button>
       <h1>Liste des vendeurs</h1>
       <Table responsive>
@@ -68,7 +118,8 @@ class Solders extends Component {
             <td>{solder.description}</td>
             <td></td>
             <td>
-              <Glyphicon glyph="glyphicon glyphicon-pencil" onClick={()=>this.updateSolder(solder)} />
+              <Glyphicon glyph="glyphicon glyphicon-pencil" onClick={()=>this.activeUpdate(solder)} />
+              <Glyphicon glyph="glyphicon glyphicon-trash" onClick={()=>this.deleteSolder(solder)} />
             </td>
           </tr>
         )}

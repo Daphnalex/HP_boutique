@@ -7,3 +7,6 @@ table{
 span.glyphicon:hover{
   cursor: pointer;
 }
+span.glyphicon-trash{
+  margin: 5px;
+}

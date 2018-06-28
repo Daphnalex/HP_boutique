@@ -28,4 +28,29 @@ router.post('/', (req,res) =>{//on peut passer un id si oui on edite si non on c
   });
 });
 
+router.put('/:id', function(req,res,next){
+  var id = req.params.id;
+  var solder = new Solders(req.body);
+  return Solders.update({_id: req.params.id},req.body,function(err){
+    if (!err){
+      return console.log('updated');
+    } else {
+      console.log(err);
+      return res.send(404, { error: 'Solder was not updated'});
+    }
+  })
+});
+
+router.delete('/:id', function(req,res,next){
+  var id = req.params.id;
+  return Solders.remove({_id: req.params.id}, function(err){
+    if (!err){
+      return console.log('delete');
+    } else {
+      console.log(err);
+      return res.send(404, { error: 'Solder was not deleted'});
+    }
+  })
+})
+
 module.exports = router;

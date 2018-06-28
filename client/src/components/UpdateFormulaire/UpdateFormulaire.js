@@ -1,17 +1,17 @@
 import React, {Component} from 'react';
 import {Modal,Button,FormGroup,ControlLabel,FormControl, HelpBlock} from 'react-bootstrap';
 
-class AddFormulaire extends Component {
+class UpdateFormulaire extends Component {
 
   constructor(props){
     super(props);
-    this.state = {
+    this.state={
       name: '',
       adress: '',
       description: '',
       picture: '',
-      articles: ['']
-    };
+      articles: []
+    }
     this.handleChangeName = this.handleChangeName.bind(this);
     this.handleChangeAdress = this.handleChangeAdress.bind(this);
     this.handleChangeDescription = this.handleChangeDescription.bind(this);
@@ -19,9 +19,21 @@ class AddFormulaire extends Component {
     this.validateForm = this.validateForm.bind(this);
   }
 
+  componentWillMount(){
+    this.setState({
+      name: this.props.data.name,
+      adress: this.props.data.adress,
+      description: this.props.data.description,
+      picture: this.props.data.picture,
+      articles: this.props.data.articles
+    });
+    console.log('this.props',this.state.name, this.state.adress, this.state.description);
+  }
+
   handleChangeName(e) {
+    console.log('event',e.target);
     e.preventDefault();
-    this.setState({ name: e.target.value });
+    this.setState({ name: e.target.value});
   }
 
   handleChangeAdress(e){
@@ -41,6 +53,7 @@ class AddFormulaire extends Component {
 
   validateForm(){
     console.log('name dans validate',this.state.name)
+    //on récupère la nouvelle donnée
     var solder = {
       name: this.state.name,
       description: this.state.description,
@@ -49,8 +62,8 @@ class AddFormulaire extends Component {
       articles: this.state.articles
     }
     console.log('donnée à envoyer', solder)
-    fetch('http://localhost:3001/api/solders', {
-      method: 'POST',
+    fetch('http://localhost:3001/api/solders/'+this.props.data._id, {
+      method: 'PUT',
       headers : {'Content-Type':'application/json'},
       body: JSON.stringify(solder)
     }).then((solder) => {
@@ -58,7 +71,6 @@ class AddFormulaire extends Component {
                           return solder; })
       .then((solder) =>  { console.log(solder); })
       .catch((error) => { console.log('That was en error'+ error); })
-      document.getElementsByClassName('modal-dialog')[0].style.display = 'none';
   }
 
   render(){
@@ -66,7 +78,7 @@ class AddFormulaire extends Component {
       <div className="static-modal">
         <Modal.Dialog>
           <Modal.Header>
-            <Modal.Title>Ajouter un vendeur</Modal.Title>
+            <Modal.Title>Mettre à jour un vendeur</Modal.Title>
           </Modal.Header>
 
           <Modal.Body>
@@ -115,5 +127,4 @@ class AddFormulaire extends Component {
     )
   }
 }
-
-export default AddFormulaire;
+export default UpdateFormulaire;
