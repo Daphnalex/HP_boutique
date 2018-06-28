@@ -9,24 +9,55 @@ class AddFormulaire extends Component {
       name: '',
       adress: '',
       description: '',
-      picture: ''
+      picture: '',
+      articles: ['']
     };
+    this.handleChangeName = this.handleChangeName.bind(this);
+    this.handleChangeAdress = this.handleChangeAdress.bind(this);
+    this.handleChangeDescription = this.handleChangeDescription.bind(this);
+    this.handleChangePicture = this.handleChangePicture.bind(this);
+    this.validateForm = this.validateForm.bind(this);
   }
 
   handleChangeName(e) {
+    e.preventDefault();
     this.setState({ name: e.target.value });
   }
 
   handleChangeAdress(e){
+    e.preventDefault();
     this.setState({adress: e.target.value});
   }
 
   handleChangeDescription(e){
-    this.setState({description: ''});
+    e.preventDefault();
+    this.setState({description: e.target.value});
   }
 
   handleChangePicture(e){
-    this.setState({picture: ''});
+    e.preventDefault();
+    this.setState({picture: e.target.value});
+  }
+
+  validateForm(){
+    console.log('name dans validate',this.state.name)
+    var solder = {
+      name: this.state.name,
+      description: this.state.description,
+      adress: this.state.adress,
+      picture: this.state.picture,
+      articles: this.state.articles
+    }
+    console.log('donnée à envoyer', solder)
+    fetch('http://localhost:3001/api/solders', {
+      method: 'POST',
+      headers : {'Content-Type':'application/json'},
+      body: JSON.stringify(solder)
+    }).then((solder) => {
+                          console.log('solder', solder);
+                          return solder; })
+      .then((solder) =>  { console.log(solder); })
+      .catch((error) => { console.log('That was en error'+ error); })
   }
 
   render(){
@@ -76,7 +107,7 @@ class AddFormulaire extends Component {
 
           <Modal.Footer>
             <Button>Close</Button>
-            <Button bsStyle="primary">Save changes</Button>
+            <Button onClick={this.validateForm} bsStyle="primary">Save changes</Button>
           </Modal.Footer>
         </Modal.Dialog>
       </div>
