@@ -4,9 +4,10 @@ import './Solders.css';
 import AddFormulaire from '../AddFormulaire/AddFormulaire.js';
 import UpdateFormulaire from '../UpdateFormulaire/UpdateFormulaire.js';
 import {observable} from 'mobx';
+import listSoldersViewStore from '../../viewStores/listSoldersViewStore.js';
 
 class Solders extends Component {
-  
+
   constructor(props){
     super(props);
     this.state = {
@@ -22,9 +23,7 @@ class Solders extends Component {
 
 
   componentDidMount(){
-    fetch('http://localhost:3001/api/solders')
-      .then(res => res.json())
-      .then(solders => this.setState({solders}))
+
   }
 
   activeForm(e){
@@ -110,7 +109,7 @@ class Solders extends Component {
           </tr>
         </thead>
         <tbody>
-        {this.state.solders.map(solder =>
+        {listSoldersViewStore.solders.map(solder =>
           <tr key={solder._id}>
             <td><img src={solder.picture} width='100%' alt={solder.name}/></td>
             <td>{solder.name}</td>
